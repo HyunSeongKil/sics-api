@@ -9,7 +9,6 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,14 +17,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "device_control")
-public class DeviceControl {
+@Table(name = "atchmnfl")
+public class Atchmnfl {
   @Id
+  @Column(name = "atchmnfl_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "device_control_id")
-  private Long deviceControlId;
+  private Long atchmnflId;
 
-  @Column(name = "device_id")
-  private Long deviceId;
+  @Column(name = "atchmnfl_group_id")
+  private Long atchmnflGroupId;
+
+  private String savedSubPath;
+
+  private String originFileName;
+
+  private String savedFileName;
+
+  private Long fileSize;
 
 }
