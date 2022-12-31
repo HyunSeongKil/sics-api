@@ -19,9 +19,9 @@
     </cache-template>
 
     <!-- 전역 변수 cache -->
-    <cache alias="CacheName" uses-template="defaultTemplate">
+    <cache alias="GlobalVariablesGetByKeyCache" uses-template="defaultTemplate">
         <key-type>java.lang.String</key-type>
-        <value-type>java.lang.String</value-type>
+        <value-type>kr.co.dhecoenergy.sicsapi.domain.GlobalVariablesDto</value-type>
         <expiry>
             <ttl unit="minutes">10</ttl>
         </expiry>

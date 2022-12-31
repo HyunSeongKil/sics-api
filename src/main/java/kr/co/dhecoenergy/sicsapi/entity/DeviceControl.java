@@ -23,9 +23,9 @@ public class DeviceControl {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "device_control_id")
-  private Long deviceControlId;
+  private long deviceControlId;
 
   @Column(name = "device_id")
-  private Long deviceId;
+  private long deviceId;
 
 }

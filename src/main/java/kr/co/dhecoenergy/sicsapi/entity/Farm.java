@@ -30,7 +30,7 @@ public class Farm {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "farm_id")
-  private Long farmId;
+  private long farmId;
 
   @Column(name = "farm_name")
   private String farmName;
@@ -39,7 +39,7 @@ public class Farm {
    * 농장주 아이디
    */
   @Column(name = "farmer_id")
-  private Long farmerId;
+  private long farmerId;
 
   @Column(name = "farm_sttus")
   private FarmSttus farmSttus;
@@ -50,15 +50,18 @@ public class Farm {
 
   // 농장 경도
   @Column(name = "farm_longitude_value")
-  private Double farmLongitudeValue;
+  private double farmLongitudeValue;
 
   // 농장 위도
   @Column(name = "farm_latitude_value")
-  private Double farmLatitudeValue;
+  private double farmLatitudeValue;
 
   // 작물 종류
   @Column(name = "crops_type")
   private CropsType cropsType;
+
+  @Column(name = "image_atchmnfl_group_id")
+  private long imageAtchmnflGroupId;
 
   @Column(name = "farm_dc", length = 1024)
   private String farmDc;

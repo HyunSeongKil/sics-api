@@ -21,14 +21,20 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.dhecoenergy.sicsapi.domain.GlobalVariables;
+import kr.co.dhecoenergy.sicsapi.domain.GlobalVariablesDto;
 import kr.co.dhecoenergy.sicsapi.domain.UserDto;
 import kr.co.dhecoenergy.sicsapi.domain.UserSearchDto;
+import kr.co.dhecoenergy.sicsapi.domain.UserSttus;
 import kr.co.dhecoenergy.sicsapi.entity.Farm;
 import kr.co.dhecoenergy.sicsapi.entity.User;
 import kr.co.dhecoenergy.sicsapi.repository.UserRepository;
+import kr.co.dhecoenergy.sicsapi.service.GlobalVariablesService;
 import kr.co.dhecoenergy.sicsapi.service.UserService;
 import kr.vaiv.sdt.cmmn.misc.CmmnBeanUtils;
+import kr.vaiv.sdt.cmmn.misc.CmmnCrypto;
 import kr.vaiv.sdt.cmmn.misc.CmmnResultMap;
+import kr.vaiv.sdt.cmmn.misc.CmmnUtils;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,11 +42,13 @@ public class UserServiceImpl implements UserService {
   private EntityManager em;
 
   private UserRepository repo;
+  private GlobalVariablesService globalVariablesService;
 
-  public UserServiceImpl(UserRepository repo) {
+  public UserServiceImpl(UserRepository repo, GlobalVariablesService globalVariablesService) {
     super();
 
     this.repo = repo;
+    this.globalVariablesService = globalVariablesService;
   }
 
   @Override
@@ -53,7 +61,9 @@ public class UserServiceImpl implements UserService {
       @Override
       @Nullable
       public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        predicates.add(criteriaBuilder.like(root.get("null"), "null"));
+        if (CmmnUtils.isNotEmpty(searchDto.getUserName())) {
+          predicates.add(criteriaBuilder.like(root.get("userName"), searchDto.getUserName()));
+        }
         // TODO Auto-generated method stub
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -88,10 +98,25 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public UserDto getByLoginId(String loginId) {
+    Optional<User> opt = repo.findByLoginId(loginId);
+
+    try {
+      return CmmnBeanUtils.entityToDto(opt.get(), UserDto.class);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
   @Transactional
-  public Long regist(UserDto dto) throws Exception {
-    dto.setRegistDt(new Date());
-    User entity = CmmnBeanUtils.dtoToEntity(dto, User.class);
+  public long regist(UserDto dto) throws Exception {
+    User entity = User.builder()
+        .loginId(dto.getLoginId())
+        .password(CmmnCrypto.sha512(dto.getPassword()))
+        .userSttus(dto.getUserSttus())
+        .registDt(new Date())
+        .build();
 
     return repo.save(entity).getUserId();
   }
@@ -106,6 +131,92 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public void deleteById(Long userId) {
     repo.deleteById(userId);
+  }
+
+  @Override
+  @Transactional
+  public String login(String loginId, String password) {
+    // loginId 확인
+    Optional<User> opt = repo.getByLoginId(loginId);
+    if (opt.isEmpty()) {
+      return "E_01";
+    }
+
+    //
+    User entity = opt.get();
+
+    // 상태 확인
+    if (UserSttus.OK != entity.getUserSttus()) {
+      return "E_03";
+    }
+
+    // password 확인
+    if (!entity.getPassword().equals(CmmnCrypto.sha512(password))) {
+      //
+      increaseLoginFailCntByLoginId(loginId);
+      repo.updateLatestLoginFailDtByLoginDt(loginId, new Date());
+
+      // 실패 최대횟수 초과이면 상태 잠그기
+      lockAccountIfExceedLoginFailCnt(loginId);
+
+      return "E_02";
+    }
+
+    //// 로그인 성공
+
+    // clear 로그인 실패 횟수
+    updateLoginFailCntByLoginId(loginId, 0);
+    // update 최근 로그인 일시
+    updateLatestLoginDtByLoginId(loginId, new Date());
+
+    return "";
+  }
+
+  @Transactional
+  private void lockAccountIfExceedLoginFailCnt(String loginId) {
+    GlobalVariablesDto globalVariablesDto = globalVariablesService
+        .getByKey(GlobalVariables.MAX_LOGIN_FAIL_CNT.toString());
+    if (null == globalVariablesDto) {
+      return;
+    }
+
+    //
+    UserDto dto = getByLoginId(loginId);
+    if (dto.getLoginFailCnt() < Integer.valueOf(globalVariablesDto.getValue())) {
+      return;
+    }
+
+    //
+    updateUserSttusByLoginId(loginId, UserSttus.BLOCKED);
+  }
+
+  @Override
+  public void increaseLoginFailCntByLoginId(String loginId) {
+    repo.increaseLoginFailCntByLoginId(loginId);
+  }
+
+  @Override
+  public void updateLatestLoginDtByLoginId(String loginId, Date latestLoginDt) {
+    repo.updateLatestLoginDt(loginId, latestLoginDt);
+  }
+
+  @Override
+  @Transactional
+  public void updateUserSttusByLoginId(String loginId, UserSttus userSttus) {
+    repo.updateUserSttusByLoginId(loginId, userSttus.toString());
+  }
+
+  @Override
+  public void updateLoginFailCntByLoginId(String loginId, int loginFailCnt) {
+    repo.updateLoginFailCntByLoginId(loginId, loginFailCnt);
+  }
+
+  @Override
+  public void updatePassword(long userId, String password) {
+    repo.updatePassword(userId, CmmnCrypto.sha512(password));
+
+    // TODO Auto-generated method stub
+
   }
 
 }

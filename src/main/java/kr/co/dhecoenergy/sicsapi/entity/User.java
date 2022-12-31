@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,11 +45,21 @@ public class User {
   @Column(name = "login_fail_cnt")
   private Integer loginFailCnt;
 
+  @Column(name = "latest_login_dt")
+  private Date latestLoginDt;
+
+  @Column(name = "latest_login_fail_dt")
+  private Date latestLoginFailDt;
+
   @Column(name = "latest_password_change_dt")
   private Date latestPasswordChangeDt;
 
   @Column(name = "user_sttus")
+  @Enumerated(EnumType.STRING)
   private UserSttus userSttus;
+
+  @Column(name = "image_atchmnfl_group_id")
+  private Long imageAtchmnflGroupId;
 
   @Column(name = "user_dc", length = 1024)
   private String userDc;

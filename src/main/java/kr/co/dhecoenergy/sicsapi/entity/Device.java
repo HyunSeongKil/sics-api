@@ -25,7 +25,10 @@ public class Device {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "device_id")
-  private Long deviceId;
+  private long deviceId;
+
+  @Column(name = "farm_id")
+  private long farmId;
 
   @Column(name = "device_name")
   private String deviceName;
@@ -38,15 +41,15 @@ public class Device {
 
   // 장치 경도
   @Column(name = "device_longitude_value")
-  private Double deviceLongitudeValue;
+  private double deviceLongitudeValue;
 
   // 장치 위도
   @Column(name = "device_latitude_value")
-  private Double deviceLatitudeValue;
+  private double deviceLatitudeValue;
 
   // 구역 번호
   @Column(name = "area_no")
-  private Long areaNo;
+  private long areaNo;
 
   @Column(name = "device_dc", length = 1024)
   private String deviceDc;

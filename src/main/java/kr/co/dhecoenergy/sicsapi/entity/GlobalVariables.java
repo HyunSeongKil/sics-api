@@ -4,8 +4,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -19,25 +17,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "atchmnfl")
-public class Atchmnfl {
+@Table(name = "global_variables")
+public class GlobalVariables {
   @Id
-  @Column(name = "atchmnfl_id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long atchmnflId;
+  @Column(name = "key")
+  private String key;
 
-  @Column(name = "atchmnfl_group_id")
-  private long atchmnflGroupId;
+  @Column(name = "value")
+  private String value;
 
-  private String savedSubPath;
+  @Column(name = "group_name")
+  private String groupName;
 
-  private String originalFilename;
-
-  private String savedFilename;
-
-  private long fileSize;
-
-  private String contentType;
+  @Column(name = "dc")
+  private String dc;
 
   @Column(name = "register_id")
   private String registerId;
@@ -50,5 +43,4 @@ public class Atchmnfl {
 
   @Column(name = "update_dt")
   private Date updateDt;
-
 }

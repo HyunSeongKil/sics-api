@@ -1,5 +1,7 @@
 package kr.co.dhecoenergy.sicsapi.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,6 +24,18 @@ public class AtchmnflGroup {
   @Id
   @Column(name = "atchmnfl_group_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long atchmnflGroupId;
+  private long atchmnflGroupId;
+
+  @Column(name = "register_id")
+  private String registerId;
+
+  @Column(name = "regist_dt")
+  private Date registDt;
+
+  @Column(name = "updater_id")
+  private String updaterId;
+
+  @Column(name = "update_dt")
+  private Date updateDt;
 
 }

@@ -4,9 +4,13 @@ public enum UserSttus {
   OK("OK"),
   BLOCKED("BLOCKED");
 
-  private String name;
+  private String code;
 
-  UserSttus(String name) {
-    this.name = name;
+  UserSttus(String code) {
+    this.code = code;
+  }
+
+  public String getCode() {
+    return this.code;
   }
 }
