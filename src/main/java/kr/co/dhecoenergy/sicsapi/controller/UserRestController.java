@@ -1,5 +1,7 @@
 package kr.co.dhecoenergy.sicsapi.controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
@@ -29,15 +31,15 @@ public class UserRestController extends SicsRestController {
   }
 
   @PutMapping("/login")
-  public ResponseEntity<String> login(@RequestBody UserDto dto) {
-    String resultCode = service.login(dto.getLoginId(), dto.getPassword());
+  public ResponseEntity<CmmnResultMap> login(@RequestBody UserDto dto) {
+    String resultCode = service.processLogin(dto.getLoginId(), dto.getPassword());
     if (0 != resultCode.length()) {
-      return ResponseEntity.ok(resultCode);
+      return ResponseEntity.ok(CmmnResultMap.of(Map.of(), resultCode));
     }
 
     // jwt 생성
-
-    return null;
+    String token = jwtService.createToken(service.getByLoginId(dto.getLoginId()));
+    return ResponseEntity.ok(CmmnResultMap.withData(token));
   }
 
   @PutMapping()

@@ -135,7 +135,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public String login(String loginId, String password) {
+  public String processLogin(String loginId, String password) {
     // loginId 확인
     Optional<User> opt = repo.getByLoginId(loginId);
     if (opt.isEmpty()) {

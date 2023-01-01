@@ -11,7 +11,7 @@ import kr.co.dhecoenergy.sicsapi.domain.UserSttus;
 import kr.vaiv.sdt.cmmn.misc.CmmnResultMap;
 
 public interface UserService {
-    String login(String loginId, String password);
+    String processLogin(String loginId, String password);
 
     // 검색 with 페이징
     CmmnResultMap search(UserSearchDto searchDto, Pageable pageable);
