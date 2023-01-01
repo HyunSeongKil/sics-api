@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.co.dhecoenergy.sicsapi.domain.UserDto;
 import kr.co.dhecoenergy.sicsapi.misc.SicsRestController;
 import kr.co.dhecoenergy.sicsapi.service.UserService;
+import kr.vaiv.sdt.cmmn.misc.CmmnResultMap;
 
 @RestController
 @RequestMapping("/users")
@@ -57,8 +58,10 @@ public class UserRestController extends SicsRestController {
   }
 
   @GetMapping()
-  public ResponseEntity<UserDto> get(HttpServletRequest request) throws Exception {
-    return ResponseEntity.ok(service.getById(jwtService.getUserId(request)));
+  public ResponseEntity<CmmnResultMap> get(HttpServletRequest request) throws Exception {
+    UserDto dto = service.getById(jwtService.getUserId(request));
+
+    return ResponseEntity.ok(CmmnResultMap.withData(dto));
   }
 
 }

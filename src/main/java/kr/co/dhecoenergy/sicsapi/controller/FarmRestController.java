@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.co.dhecoenergy.sicsapi.domain.FarmDto;
 import kr.co.dhecoenergy.sicsapi.misc.SicsRestController;
 import kr.co.dhecoenergy.sicsapi.service.FarmService;
+import kr.vaiv.sdt.cmmn.misc.CmmnResultMap;
 
 @RestController
 @RequestMapping("/farms")
@@ -36,25 +37,30 @@ public class FarmRestController extends SicsRestController {
   }
 
   @GetMapping("/{farmId}")
-  public ResponseEntity<FarmDto> get(HttpServletRequest request, @PathVariable long farmId) {
+  public ResponseEntity<CmmnResultMap> get(HttpServletRequest request, @PathVariable long farmId) {
     long farmerId = jwtService.getUserId(request);
 
-    return ResponseEntity.ok(service.getByFarmIdAndFarmerId(farmId, farmerId));
+    FarmDto dto = service.getByFarmIdAndFarmerId(farmId, farmerId);
+
+    return ResponseEntity.ok(CmmnResultMap.withData(dto));
   }
 
   @GetMapping("")
-  public ResponseEntity<List<FarmDto>> gets(HttpServletRequest request) {
+  public ResponseEntity<CmmnResultMap> gets(HttpServletRequest request) {
     long farmerId = jwtService.getUserId(request);
 
-    return ResponseEntity.ok(service.getsByFarmerId(farmerId));
+    List<FarmDto> dtos = service.getsByFarmerId(farmerId);
+
+    return ResponseEntity.ok(CmmnResultMap.withData(dtos));
   }
 
   @PostMapping()
-  public ResponseEntity<Long> regist(HttpServletRequest request, @RequestParam FarmDto dto) {
+  public ResponseEntity<CmmnResultMap> regist(HttpServletRequest request, @RequestParam FarmDto dto) {
     long farmerId = jwtService.getUserId(request);
     dto.setFarmId(farmerId);
 
-    return ResponseEntity.ok(service.regist(dto));
+    long farmId = service.regist(dto);
+    return ResponseEntity.ok(CmmnResultMap.withData(farmId));
   }
 
   @PutMapping()
